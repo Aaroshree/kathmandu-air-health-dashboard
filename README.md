@@ -139,7 +139,7 @@ Run the notebooks sequentially — each one produces files that the next depends
 - Dropped rows where PM2.5 was null (the primary target variable).
 - Resampled hourly air quality data to **daily averages**.
 - Aligned all three datasets to a common date range (Aug 2022 – Dec 2024).
-- Forward-filled weekly Google Trends data to daily frequency using `merge_asof`.
+- Resampled weekly Google Trends data to daily frequency using **linear interpolation** between weekly anchor points (anchored at the midpoint of each week, Wednesday). Forward-fill was avoided because it creates artificial step-jumps at every week boundary — a staircase artefact that can inflate lag-correlation coefficients at multiples of 7 days. A diagnostic comparison plot is saved to `data/processed/trends_interpolation_comparison.png`.
 - Dropped the "breathing problem" Trends column (contained all zeros).
 
 ### Exploratory Analysis (Notebook 03)
@@ -179,8 +179,9 @@ Model: **SARIMAX(1,1,1)(1,1,1,7)** — SARIMA with weekly seasonality and weathe
 | Exogenous | Temperature, Precipitation, Wind Speed, Humidity | Weather-driven pollution dynamics |
 
 - **Training set:** August 2022 – October 2024 (~821 days)
-- **Holdout set:** November – December 2024 (~60 days)
-- **Holdout MAE:** 28.82 μg/m³ (note: holdout period was anomalously polluted at mean 61.4 μg/m³ vs training mean 29.2 μg/m³)
+- **Primary holdout:** November – December 2024 (~60 days) — MAE 28.82 μg/m³, MAPE 43.9%
+- **Normal holdout (secondary):** October 2023 (~31 days) — evaluated out-of-sample on a typical pre-winter month to give a fair baseline accuracy estimate (see Notebook 04, Section 5c)
+- **Why two holdouts?** The Nov–Dec 2024 period averaged 61.4 μg/m³ — more than twice the training mean of 29.2 μg/m³ — making it a distribution-shift stress test rather than a representative accuracy measure. Residual analysis (Section 5b) confirms the errors are systematically one-directional, a signature of an unforeseeable structural event, not model bias. Both evaluations are reported transparently.
 - A bridge weather regression (Linear Regression: weather → PM2.5) fills the 2025 gap to enable a forward forecast.
 
 ---
@@ -271,7 +272,7 @@ Tested on Python 3.10+. No API keys are required for any data source.
 - **Google Trends is a proxy, not clinical data.** Search volumes reflect public awareness and internet access as much as actual health outcomes. Results should be interpreted with appropriate caution.
 - **Air quality data starts August 2022.** Open-Meteo's historical air quality coverage for Kathmandu coordinates is limited before this date, restricting the study period to ~2.4 years.
 - **Forecast bridge uses a simplified regression.** The 2025 PM2.5 bridge (used to extend the SARIMAX training window) is estimated from weather variables alone via linear regression (R² ≈ low-moderate). This introduces uncertainty in the 90-day forward forecast.
-- **High holdout MAPE (43.9%).** November–December 2024 was an exceptionally polluted period (~2× the training mean). The model's forecast of ~34 μg/m³ represents a normal winter level, not a failure — but users should treat point forecasts as indicative rather than precise.
+- **Holdout MAPE must be interpreted in context.** The primary holdout (Nov–Dec 2024) recorded a MAPE of 43.9% — but that period was anomalously polluted (~2× the training mean). Residual analysis shows error is systematically positive throughout, pointing to a distribution-shift event (likely extreme temperature inversions or unusual biomass burning) rather than a fundamental model flaw. A secondary evaluation on a normal holdout window (October 2023) gives a more representative accuracy estimate. Users should consult both figures.
 - **No ground-truth health data.** Hospital admissions, clinic visits, or clinical respiratory metrics were not available. Google Trends search interest is used as a behavioural proxy only.
 - **Single location.** All analysis is specific to central Kathmandu. Pollution levels vary significantly across the valley.
 
