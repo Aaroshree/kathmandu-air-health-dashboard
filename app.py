@@ -1,7 +1,7 @@
 """
 Kathmandu Air Pollution & Respiratory Health Dashboard
 ======================================================
-Author  : Data Science Student — 3rd Semester
+Author  : Aaroshree Gautam
 Data    : Open-Meteo API + Google Trends (2022-08 → 2024-12)
 Run     : streamlit run app.py
 """
@@ -533,6 +533,7 @@ def load_forecast():
     return fc, True        # (dataframe, is_synthetic)
 
 
+
 # ─────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────
@@ -540,14 +541,14 @@ def render_sidebar(df):
     with st.sidebar:
         st.markdown(
             "<div style='font-size:0.95rem;font-weight:600;color:#c8d0e7;"
-            "letter-spacing:0.04em;padding:4px 0 16px 0;'>Dashboard Controls</div>",
+            "letter-spacing:0.04em;padding:0 0 12px 0;'>Dashboard Controls</div>",
             unsafe_allow_html=True,
         )
 
         min_d, max_d = df["date"].min().date(), df["date"].max().date()
         st.markdown(
             "<div style='font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;"
-            "color:#8b95b0;margin-bottom:6px;'>Date Range</div>",
+            "color:#8b95b0;margin-bottom:4px;'>Date Range</div>",
             unsafe_allow_html=True,
         )
         date_input = st.date_input(
@@ -562,12 +563,12 @@ def render_sidebar(df):
         else:
             st.warning("Please select both a start and end date.")
             date_range = (min_d, max_d)
-
-        st.markdown("---")
-
+        
+        st.caption("Data available from Aug 2022 to Dec 2024 only, so select past 2 yr!")
+        
         st.markdown(
             "<div style='font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;"
-            "color:#8b95b0;margin-bottom:6px;'>Season Filter</div>",
+            "color:#8b95b0;margin:12px 0 4px 0;'>Season Filter</div>",
             unsafe_allow_html=True,
         )
         seasons = st.multiselect(
@@ -580,22 +581,19 @@ def render_sidebar(df):
             st.warning("Select at least one season.")
             seasons = ["Winter", "Pre-Monsoon", "Monsoon", "Post-Monsoon"]
 
-        st.markdown("---")
         st.markdown(
-            "<div style='font-size:0.72rem;color:#c8d0e7;line-height:1.9;'>"
+            "<div style='font-size:0.72rem;color:#c8d0e7;line-height:1.6;margin-top:12px;'>"
             "<div style='color:#a0aac0;text-transform:uppercase;letter-spacing:0.08em;"
-            "font-size:0.68rem;margin-bottom:6px;'>About</div>"
-            "Location &mdash; Kathmandu, Nepal<br>"
-            "Data period &mdash; Aug 2022 to Dec 2024<br>"
-            "Sources &mdash; Open-Meteo, Google Trends<br>"
-            "WHO PM2.5 limit &mdash; 15 &mu;g/m&sup3;<br>"
-            "Nepal NAAQS &mdash; 40 &mu;g/m&sup3;"
+            "font-size:0.68rem;margin-bottom:4px;'>About</div>"
+            "Kathmandu, Nepal<br>"
+            "Aug 2022 – Dec 2024<br>"
+            "Open-Meteo, Google Trends<br>"
+            "WHO: 15 μg/m³ | Nepal: 40 μg/m³"
             "</div>",
             unsafe_allow_html=True,
         )
 
     return date_range, seasons
-
 
 # ─────────────────────────────────────────────
 # TAB 1 — OVERVIEW
@@ -1239,7 +1237,7 @@ def tab_lag(df_f):
 
     st.markdown("""
 <div class="info-box">
-🔬 <strong>Lag Correlation Analysis</strong> — How many days after a PM2.5 spike do health 
+<strong>Lag Correlation Analysis</strong> — How many days after a PM2.5 spike do health 
 outcomes peak? Your EDA found PM2.5 → Cough peaks at <strong>Day 4 (r = 0.327)</strong>. 
 Explore lags 0–21 days across all health indicators below.
 </div>
@@ -1403,8 +1401,9 @@ def main():
         "</h1>"
         "<p style='color:#a0aac0;font-size:0.82rem;letter-spacing:0.06em;"
         "text-transform:uppercase;'>"
-        "Data Science Project &nbsp;&middot;&nbsp; Aug 2022 &ndash; Dec 2024 "
-        "&nbsp;&middot;&nbsp; Open-Meteo &amp; Google Trends"
+        "Aug 2022 &ndash; Dec 2024 "
+        "&nbsp;&middot;&nbsp; Open-Meteo &amp; Google Trends "
+        "&nbsp;&middot;&nbsp;by Aaroshree Gautam"
         "</p>"
         "</div>",
         unsafe_allow_html=True,
@@ -1470,8 +1469,7 @@ def main():
   Built with Streamlit & Plotly &nbsp;·&nbsp;
   Data: Open-Meteo API + Google Trends &nbsp;·&nbsp;
   WHO PM2.5 guideline: 15 μg/m³ &nbsp;·&nbsp;
-  Nepal NAAQS: 40 μg/m³ &nbsp;·&nbsp;
-  Aaroshree Gautam &nbsp;·&nbsp; Data Science
+  Nepal NAAQS: 40 μg/m³ &nbsp;
 </div>
 """, unsafe_allow_html=True)
 
