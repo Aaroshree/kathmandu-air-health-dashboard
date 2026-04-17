@@ -340,6 +340,13 @@ st.markdown("""
     [data-testid="stSidebar"] .stWidgetLabel p {
         color: #e8ecf5 !important;
     }
+        /* Make expander text white */
+    .streamlit-expanderHeader {
+        color: #ffffff !important;
+    }
+    .streamlit-expanderContent {
+        color: #ffffff !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
