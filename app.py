@@ -340,12 +340,31 @@ st.markdown("""
     [data-testid="stSidebar"] .stWidgetLabel p {
         color: #e8ecf5 !important;
     }
-        /* Make expander text white */
-    .streamlit-expanderHeader {
+    /* Force ALL expander text to white */
+    .streamlit-expanderHeader,
+    .streamlit-expanderHeader p,
+    .streamlit-expanderHeader span,
+    .streamlit-expanderHeader div,
+    div[data-testid="stExpander"] summary,
+    div[data-testid="stExpander"] summary p,
+    div[data-testid="stExpander"] summary span,
+    details summary,
+    details summary p,
+    details summary span {
         color: #ffffff !important;
     }
-    .streamlit-expanderContent {
+    
+    .streamlit-expanderContent,
+    .streamlit-expanderContent p,
+    .streamlit-expanderContent span,
+    .streamlit-expanderContent div {
         color: #ffffff !important;
+    }
+    
+    /* Also target the expander icon */
+    .streamlit-expanderHeader svg {
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
     }
 </style>
 """, unsafe_allow_html=True)
